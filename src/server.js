@@ -7,7 +7,7 @@ import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js';
 
 export const setupServer = () => {
   const app = express();
-  // const PORT = 3000(process.env.PORT);
+
   const PORT = Number(env('PORT', '3000'));
 
   app.use(express.json());
