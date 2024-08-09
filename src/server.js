@@ -3,11 +3,12 @@ import pino from 'pino-http';
 import cors from 'cors';
 import { env } from './utils/env.js';
 import contactsRouter from './routes/contacts.js';
-import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js';
+import { notFoundHandler } from './middlewares/notFoundHandler.js';
+import { errorHandler } from './middlewares/errorHandler.js';
 
 export const setupServer = () => {
   const app = express();
-  // const PORT = 3000(process.env.PORT);
+
   const PORT = Number(env('PORT', '3000'));
 
   app.use(express.json());
