@@ -12,6 +12,8 @@ export const getAllContacts = async ({
     const limit = perPage;
     const skip = (page - 1) * perPage;
 
+    const order = sortOrder.toLowerCase() === SORT_ORDER.DESC ? -1 : 1;
+
     const contactsQuery = Contact.find();
 
     if (filter.contactType) {
@@ -22,14 +24,13 @@ export const getAllContacts = async ({
         contactsQuery.where('isFavourite').equals(filter.isFavourite);
     }
 
-    const [contactsCount, contacts] = await Promise.all([
-        Contact.countDocuments(contactsQuery.getFilter()),
-        contactsQuery
-            .skip(skip)
-            .limit(limit)
-            .sort({ [sortBy]: sortOrder })
-            .exec(),
-    ]);
+    const contactsCount = await Contact.countDocuments(contactsQuery.getFilter());
+
+    const contacts = await contactsQuery
+        .skip(skip)
+        .limit(limit)
+        .sort({ [sortBy]: order })
+        .exec();
 
     const paginationData = calculatePaginationData(contactsCount, perPage, page);
 
@@ -73,21 +74,4 @@ export const deleteContact = async (contactId) => {
     return contact;
 };
 
-export const updateContact = async (contactId, payload, options = {}) => {
-    const rawResult = await Contact.findOneAndUpdate(
-        { _id: contactId },
-        payload,
-        {
-            new: true,
-            includeResultMetadata: true,
-            ...options,
-        }
-    );
 
-    if (!rawResult || !rawResult.value) return null;
-
-    return {
-        contact: rawResult.value,
-        isNew: Boolean(rawResult?.lastErrorObject?.upserted),
-    };
-};
