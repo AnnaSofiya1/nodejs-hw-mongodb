@@ -70,7 +70,7 @@ export const patchContact = async (contactId, userId, payload, options = {}) => 
     };
 };
 
-export const deleteContact = async (contactId) => {
+export const deleteContact = async (contactId ,userId) => {
     const contact = await Contact.findOneAndDelete({ _id: contactId, userId });
     return contact;
 };

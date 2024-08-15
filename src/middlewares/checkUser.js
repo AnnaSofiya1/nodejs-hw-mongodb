@@ -12,7 +12,7 @@ export const checkUser = async (req, res, next) => {
         return;
     }
 
-    const contact = await ContactsCollection.findOne({ _id: contactId, userId });
+    const contact = await Contact.findOne({ _id: contactId, userId });
 
     if (!contact) {
         return next(createHttpError(404, 'Contact not found'));

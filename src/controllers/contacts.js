@@ -1,9 +1,11 @@
 import { getAllContacts, getContactById, createContact, patchContact, deleteContact } from "../services/contacts.js";
 import { parsePaginationParams } from "../utils/parsePaginationParams.js";
 import { parseSortParams } from "../utils/parseSortParams.js";
-import { parseFilterParams } from "../utils/parseFilterParams.js";
+
 
 import createHttpError from 'http-errors';
+import { parseFilterParams } from "../utils/parseFilterParams.js";
+
 
 export const getContactsController = async (req, res) => {
 
