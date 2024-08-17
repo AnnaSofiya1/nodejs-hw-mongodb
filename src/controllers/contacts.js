@@ -2,7 +2,6 @@ import { getAllContacts, getContactById, createContact, patchContact, deleteCont
 import { parsePaginationParams } from "../utils/parsePaginationParams.js";
 import { parseSortParams } from "../utils/parseSortParams.js";
 
-
 import createHttpError from 'http-errors';
 import { parseFilterParams } from "../utils/parseFilterParams.js";
 
