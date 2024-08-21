@@ -7,13 +7,11 @@ export const getAllContacts = async ({
     perPage = 10,
     sortOrder = SORT_ORDER.ASC,
     sortBy = '_id',
-    filter = {},
+    filter,
     userId,
 }) => {
     const limit = perPage;
     const skip = (page - 1) * perPage;
-
-    const order = sortOrder.toLowerCase() === SORT_ORDER.DESC ? -1 : 1;
 
     const contactsQuery = Contact.find({ userId });
 
@@ -25,13 +23,17 @@ export const getAllContacts = async ({
         contactsQuery.where('isFavourite').equals(filter.isFavourite);
     }
 
-    const contactsCount = await Contact.countDocuments(contactsQuery.getFilter());
+    const [contactsCount, contacts] = await Promise.all([
+        Contact
+            .countDocuments(contactsQuery.getFilter())
+            .merge(contactsQuery),
 
-    const contacts = await contactsQuery
-        .skip(skip)
-        .limit(limit)
-        .sort({ [sortBy]: order })
-        .exec();
+        contactsQuery
+            .skip(skip)
+            .limit(limit)
+            .sort({ [sortBy]: sortOrder })
+            .exec(),
+    ]);
 
     const paginationData = calculatePaginationData(contactsCount, perPage, page);
 
@@ -42,7 +44,7 @@ export const getAllContacts = async ({
 };
 
 export const getContactById = async (contactId, userId) => {
-    const contact = await Contact.findOne({_id: contactId, userId });
+    const contact = await Contact.findOne({ _id: contactId, userId });
     return contact;
 };
 
@@ -59,8 +61,7 @@ export const patchContact = async (contactId, userId, payload, options = {}) => 
             new: true,
             includeResultMetadata: true,
             ...options,
-        }
-    );
+        });
 
     if (!rawResult || !rawResult.value) return null;
 
@@ -70,7 +71,7 @@ export const patchContact = async (contactId, userId, payload, options = {}) => 
     };
 };
 
-export const deleteContact = async (contactId ,userId) => {
+export const deleteContact = async (contactId, userId) => {
     const contact = await Contact.findOneAndDelete({ _id: contactId, userId });
     return contact;
 };
